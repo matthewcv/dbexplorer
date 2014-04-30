@@ -1,0 +1,11 @@
+﻿<div ng-controller="ShellController">
+    <ul class="ui breadcrumb">
+        <li class="section">{{server}}</li>
+    </ul>
+    <div ng-controller="DbListController">
+
+        <ul>
+            <li ng-repeat="db in databases"><a ng-click="serverDetails();$event.preventDefault();" href="/{{db.Name}}">{{db.Name}}</a></li>
+        </ul>
+    </div>
+</div>
