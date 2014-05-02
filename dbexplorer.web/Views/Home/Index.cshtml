@@ -1,11 +1,28 @@
 ﻿<div ng-controller="ShellController">
-    <ul class="ui breadcrumb">
-        <li class="section">{{server}}</li>
-    </ul>
-    <div ng-controller="DbListController">
+    <div class="ui breadcrumb">
+        <i ng-if="!$first" ng-repeat-start="b in breadcrumbs" class="right arrow icon divider"></i>
+        <span class="section" ng-repeat-end >
+            <a href="{{b.name}}" ng-if="!$last" a-click="breadCrumbNav(b);">{{b.name}}</a>
+            <span ng-if="$last">{{b.name}}</span>
+        </span>
+    </div>
+    
+    <div ng-switch="view">
 
-        <ul>
-            <li ng-repeat="db in databases"><a ng-click="serverDetails();$event.preventDefault();" href="/{{db.Name}}">{{db.Name}}</a></li>
-        </ul>
+        <div ng-switch-when="dbDetails" ng-controller="DbDetailsController">
+            <ul>
+                <li ng-repeat="table in databaseDetails.Tables | orderBy:'Name'">{{table.Name}} <a href="/details" a-click="details(table)">details</a> <a href="/data" a-click="data(table)">data</a></li>
+            </ul>
+        </div>
+
+        <div ng-switch-when="dbList" ng-controller="DbListController">
+
+            <ul>
+                <li ng-repeat="db in databases"><a a-click="dbDetails(db);" href="/{{db.Name}}">{{db.Name}}</a></li>
+            </ul>
+        </div>
+        
+        <div ng-switch-when="tableData" ng-controller="TableDataController"></div>
+
     </div>
 </div>

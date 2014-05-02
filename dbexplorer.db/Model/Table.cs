@@ -11,6 +11,9 @@ namespace dbexplorer.db.Model
         public string Schema { get;  set; }
         public string Name { get;  set; }
         public string Type { get;  set; }
+        public bool IsView { get { return Type.Equals("VIEW", StringComparison.InvariantCultureIgnoreCase); } }
 
+        public List<Column> Columns { get; set; }
+        public List<Reference> References { get; set; } 
     }
 }

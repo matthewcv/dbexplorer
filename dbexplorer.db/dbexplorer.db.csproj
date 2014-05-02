@@ -41,7 +41,9 @@
   <ItemGroup>
     <Compile Include="IDataAccess.cs" />
     <Compile Include="IMetaData.cs" />
+    <Compile Include="Model\Column.cs" />
     <Compile Include="Model\Database.cs" />
+    <Compile Include="Model\Reference.cs" />
     <Compile Include="Model\Server.cs" />
     <Compile Include="Model\Table.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

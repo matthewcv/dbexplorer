@@ -27,10 +27,10 @@ namespace dbexplorer.web.Controllers
         /// Get a listing of all the tables in a database
         /// </summary>
         /// <returns></returns>
-        [Route("Tables/{server}/{database}")]
-        public async Task<List<Table>> GetTables(string server, string database)
+        [Route("DatabaseDetails/{server}/{database}")]
+        public async Task<Database> GetDatabaseDetails(string server, string database)
         {
-            return await _meta.GetTables(name(server), database);
+            return await _meta.GetDatabaseDetails(name(server), database);
 
         }
 
@@ -44,6 +44,12 @@ namespace dbexplorer.web.Controllers
         {
 
             return await _meta.GetDatabases(name(server));
+        }
+
+        [Route("GetTableData/{server}/{database}")]
+        public async Task<Table> GetTableData(string server, string database)
+        {
+            return null;
         }
 
         private string name(string n)

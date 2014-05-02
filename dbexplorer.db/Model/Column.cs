@@ -6,10 +6,17 @@ using System.Threading.Tasks;
 
 namespace dbexplorer.db.Model
 {
-    public class Database
+    public class Column
     {
         public string Name { get; set; }
 
-        public List<Table> Tables { get; set; } 
+        public string DataType { get; set; }
+
+        public bool IsNullable { get; set; }
+
+        public bool IsPrimaryKey { get; set; }
+
+
+        
     }
 }

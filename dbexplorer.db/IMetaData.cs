@@ -17,11 +17,11 @@ namespace dbexplorer.db
         Task<List<Database>> GetDatabases(string server);
 
         /// <summary>
-        /// gets a listing of tables from a database and serer
+        /// gets the details for a database
         /// </summary>
         /// <param name="server"></param>
         /// <param name="database"></param>
         /// <returns></returns>
-        Task<List<Table>> GetTables(string server, string database);
+        Task<Database> GetDatabaseDetails(string server, string database);
     }
 }
