@@ -4,11 +4,12 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using dbexplorer.db.Model;
 
 namespace dbexplorer.db
 {
     public interface IDataAccess
     {
-
+        Task<List<List<object>>> GetData(string server, string database, string table, TableQueryOptions options = null);
     }
 }

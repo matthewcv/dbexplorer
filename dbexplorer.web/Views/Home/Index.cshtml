@@ -1,28 +1,59 @@
 ﻿<div ng-controller="ShellController">
-    <div class="ui breadcrumb">
-        <i ng-if="!$first" ng-repeat-start="b in breadcrumbs" class="right arrow icon divider"></i>
-        <span class="section" ng-repeat-end >
-            <a href="{{b.name}}" ng-if="!$last" a-click="breadCrumbNav(b);">{{b.name}}</a>
-            <span ng-if="$last">{{b.name}}</span>
-        </span>
-    </div>
+    <ul class="breadcrumbs">
+        @*<i ng-if="!$first" ng-repeat-start="b in breadcrumbs" class="right arrow icon divider"></i>*@
+        <li ng-repeat="b in breadcrumbs" ng-class="$last?'current':''">
+            <a href="" ng-if="!$last" ng-click="breadCrumbNav(b);">{{b.name}}</a>
+            <span ng-if="$last" >{{b.name}}</span>
+        </li>
+    </ul>
     
     <div ng-switch="view">
+        
 
         <div ng-switch-when="dbDetails" ng-controller="DbDetailsController">
             <ul>
-                <li ng-repeat="table in databaseDetails.Tables | orderBy:'Name'">{{table.Name}} <a href="/details" a-click="details(table)">details</a> <a href="/data" a-click="data(table)">data</a></li>
+                <li ng-repeat="table in databaseDetails.Tables"><a href="" ng-click="tableData(table)">{{table.Name}}</a> </li>
             </ul>
         </div>
 
         <div ng-switch-when="dbList" ng-controller="DbListController">
 
             <ul>
-                <li ng-repeat="db in databases"><a a-click="dbDetails(db);" href="/{{db.Name}}">{{db.Name}}</a></li>
+                <li ng-repeat="db in databases"><a ng-click="dbDetails(db);" href="">{{db.Name}}</a></li>
             </ul>
         </div>
         
-        <div ng-switch-when="tableData" ng-controller="TableDataController"></div>
+        <div ng-switch-when="tableData" ng-controller="TableDataController">
+            <div id="pager"><a href="" ng-click="pageLeft()"><i class="left arrow icon"></i></a> <a href="" ng-click="pageRight()"><i class="right arrow icon"></i></a></div>
+            <table id="table-data" class="">
+                <thead>
+                    <tr>
+                        <th ng-if="table.References">
+                            &nbsp;
+                        </th>
+                        <th class="{{t.IsPrimaryKey ? 'pk': ''}}" ng-repeat="t in table.Columns">{{t.Name}}</th>
+                    </tr>
+                    <tr>
+                        <td ng-if="table.References">
+                            REFS
+                        </td>
+                        <td ng-repeat="t in table.Columns">{{t.DataType}}</td>
+                    </tr>
+                    
+                </thead>
+                <tbody>
+                    <tr ng-repeat="row in data">
+                        <td ng-if="table.References">
+                            <a href="" ng-click="referenceTo(row, r)" ng-repeat="r in table.References">{{r.PkTableName}} </a>
+                        </td>
+                        <td ng-repeat="c in row track by $index">{{c}}
+                            
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
 
     </div>
 </div>

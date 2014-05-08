@@ -8,6 +8,7 @@ using System.Web.Http;
 using System.Web.ModelBinding;
 using dbexplorer.db;
 using dbexplorer.db.Model;
+using dbexplorer.web.Models;
 
 namespace dbexplorer.web.Controllers
 {
@@ -46,10 +47,11 @@ namespace dbexplorer.web.Controllers
             return await _meta.GetDatabases(name(server));
         }
 
-        [Route("GetTableData/{server}/{database}")]
-        public async Task<Table> GetTableData(string server, string database)
+        [Route("TableData/{server}/{database}/{table}")]
+        [BindJson(typeof(TableQueryOptions),"options")]
+        public async Task<List<List<object>>> GetTableData(string server, string database, string table, TableQueryOptions options)
         {
-            return null;
+            return await _data.GetData(name(server), database, table, options);
         }
 
         private string name(string n)

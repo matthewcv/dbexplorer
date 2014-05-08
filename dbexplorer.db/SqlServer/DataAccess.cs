@@ -89,10 +89,96 @@ namespace dbexplorer.db.SqlServer
             
         }
 
-        public async Task<List<List<object>>> GetTableData(string server, string database, Table table, int page = 1, int size = 20)
+        public async Task<List<List<object>>> GetData(string server, string database, string table, TableQueryOptions options = null)
         {
-            return null;
-            
+            options = options ?? TableQueryOptions.Default;
+
+            Database db = await new MetaData().GetDatabaseDetails(server, database);
+
+            Table tab = db.Tables.First(t => t.Name == table);
+
+            string sql = GetSelectSql(tab, options);
+
+            List<List<object>> data = new List<List<object>>();
+
+            await ExecuteReader(server, database, sql, r =>
+            {
+                List<object> row = new List<object>();
+                for (int i = 0; i < tab.Columns.Count; i++)
+                {
+                    row.Add(r[i]);
+                }
+                data.Add(row);
+            });
+
+            return data;
+        }
+
+
+        private string GetSelectSql(Table t, TableQueryOptions options)
+        {
+            string columns = GetColumns(t, options);
+            string sort = GetSortExpression(t, options);
+            StringBuilder sb = new StringBuilder("SELECT * FROM ")
+                .Append("(SELECT ")
+                .Append(columns)
+                .Append(", ROW_NUMBER() OVER (ORDER BY ")
+                .Append(sort)
+                .Append(") AS r ")
+                .Append("FROM ")
+                .Append(t.Name)
+                .Append(") x WHERE ")
+                .Append(GetPaging(options));
+
+
+
+
+            return sb.ToString();
+        }
+
+        private string GetPaging(TableQueryOptions o)
+        {
+            int first = (o.Page - 1)*o.PageSize;
+            int last = first + o.PageSize;
+
+            return "x.r > " + first + " AND x.r <= " + last;
+        }
+
+        private string GetColumns(Table t, TableQueryOptions options)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            t.Columns.ForEach(c =>
+            {
+                if (sb.Length > 0)
+                {
+                    sb.Append(",");
+                }
+                sb.Append(c.Name);
+            });
+
+
+            return sb.ToString();
+        }
+
+        private string GetSortExpression(Table t, TableQueryOptions options)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            t.Columns.ForEach(c =>
+            {
+                if (c.IsPrimaryKey)
+                {
+                    if (sb.Length > 0)
+                    {
+                        sb.Append(",");
+                    }
+                    sb.Append(c.Name);
+                }
+            });
+
+
+            return sb.ToString();
         }
     }
 }

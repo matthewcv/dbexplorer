@@ -5,8 +5,10 @@
         var shell = {
             server: 'SRV_DEV_TRANS\\SMGTRANS',
             database: null,
+            table: null,
             breadcrumbs: [],
-            shellScope:null,
+            shellScope: null,
+            tableDataOptions:{Page:1,PageSize:10},
             popBreadcrumbs: function(b) {
                 var i = this.breadcrumbs.indexOf(b);
                 this.breadcrumbs.splice(i + 1, this.breadcrumbs.length);
@@ -51,6 +53,21 @@
                     this.apiGet("/Db/DatabaseDetails/" + clean(shell.server) + "/" + shell.database.Name, haveData);
                 },
 
+                getTableData: function (scope) {
+                    var options = encodeURIComponent( angular.toJson(shell.tableDataOptions));
+                    console.log(options);
+                    $http.get("/Db/TableData/" + clean(shell.server) + "/" + shell.database.Name + "/" + shell.table.Name + "?options=" + options)
+                        .then(function (response) {
+
+                            scope.data = response.data;
+                        },
+                        this.apiError.bind(this));
+                },
+
+                apiError:function(err) {
+                    console.dir(err);
+                },
+
                 apiGet: function (url, haveData) {
 
                     if (this.cache[url]) {
@@ -60,9 +77,7 @@
                         $http.get(url).then(function (response) {
                             that.cache[url] = response.data;
                             haveData(that.cache[url]);
-                        }, function(err) {
-                            console.dir(err);
-                        });
+                        }, this.apiError.bind(this));
                     }
                 }
             }
@@ -73,23 +88,7 @@
 
     var app = angular.module('dbexplorer', ['shell', 'api']);
 
-    app.directive('aClick', ["$parse",
-        function ($parse) {
-            return {
-                compile: function ($element, attr) {
-                    var fn = $parse(attr['aClick']);
-                    return function(scope, element, attr) {
-                        element.on('click', function (ev) {
-                            ev.preventDefault();
-                            scope.$apply(function() {
-                                fn(scope, { $event: ev });
-                            })
-                        });
-                    }
-                }
-            };
-        }
-    ]);
+
 
 
     app.controller('DbListController', ['$scope', 'api', 'shell',
@@ -122,21 +121,44 @@
             });
 
 
-            $scope.details = function() {
-                
-            }
 
-            $scope.data = function(table) {
-                shell.pushBreadcrumb({}, { name: table.Name + ' data', table: table, view: 'tableData' });
+            $scope.tableData = function (table) {
+                shell.table = table;
+                shell.pushBreadcrumb({}, { name: table.Name, table: table, view: 'tableData' });
             }
         }
     ]);
 
     app.controller('TableDataController', ['$scope', 'api', 'shell',
         function ($scope, api, shell) {
-            var b = shell.currentBreadcrumb();
+            console.log('TableDataController');
+            api.getTableData($scope);
 
-            console.dir(b);
+            var b = shell.currentBreadcrumb();
+            console.dir(b.table);
+            $scope.table = b.table;
+
+            $scope.pageLeft = function() {
+                if (shell.tableDataOptions.Page > 1) {
+                    shell.tableDataOptions.Page--;
+                    api.getTableData($scope);
+                }
+            };
+
+            $scope.pageRight = function() {
+                shell.tableDataOptions.Page++;
+                api.getTableData($scope);
+            };
+
+            $scope.referenceTo = function (row, ref) {
+                console.dir(shell);
+                //var refTable = $.grep(shell.database.Tables, function(t) {
+                //    return t.Name == ref.PkTableName && t.schema == ref.PkTableSchema;
+                //})[0];
+                
+                //shell.pushBreadcrumb({},{name: })
+                console.dir(refTable);
+            }
         }
     ]);
 

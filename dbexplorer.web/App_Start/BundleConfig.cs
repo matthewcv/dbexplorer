@@ -17,7 +17,7 @@ namespace dbexplorer.web
 
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                    "~/Content/css/semantic.css",
+                    "~/Content/foundation.css",
                       "~/Content/site.css"));
         }
     }
