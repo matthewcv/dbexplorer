@@ -50,7 +50,7 @@ ORDER BY FK_TABLE_SCHEMA, FK_TABLE_NAME, FK_COLUMN_NAME, FK_ORDINAL_POSITION
             {
                 _databases = new List<Database>();
                 await DataAccess.ExecuteReader(server, "master", "select name from sys.databases WHERE name NOT IN ('master','tempdb','model','msdb')",
-                    r => _databases.Add(new Database() { Name = r.GetString(0) }));
+                    async r => _databases.Add(new Database() { Name = r.GetString(0) }));
             }
             return _databases;
 
@@ -65,21 +65,21 @@ ORDER BY FK_TABLE_SCHEMA, FK_TABLE_NAME, FK_COLUMN_NAME, FK_ORDINAL_POSITION
                 _databaseDetails.Add(db);
                 List<Table> tables = new List<Table>();
                 await DataAccess.ExecuteReaderAdvanced(server, database, databaseDetailsSql,
-                    r =>
+                    async r =>
                     {
-                        while ( r.Read())
+                        while ( await r.ReadAsync())
                         {
                             MapTablesAndColumns(tables,r);
                         }
 
-                         r.NextResult();
-                        while ( r.Read())
+                         await r.NextResultAsync();
+                         while (await r.ReadAsync())
                         {
                             MapPrimaryKeys(tables, r);
                         }
 
-                         r.NextResult();
-                        while ( r.Read())
+                         await r.NextResultAsync();
+                         while (await r.ReadAsync())
                         {
                             MapReferences(tables, r);
                         }

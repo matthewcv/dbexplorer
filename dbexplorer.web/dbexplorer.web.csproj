@@ -181,7 +181,10 @@
     <Content Include="Scripts\angular-touch.min.js" />
     <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
-    <Content Include="Scripts\dbexplorer.js" />
+    <Content Include="Scripts\app\apiService.js" />
+    <Content Include="Scripts\app\app.js" />
+    <Content Include="Scripts\app\directives.js" />
+    <Content Include="Scripts\app\shellService.js" />
     <Content Include="Scripts\errors.json" />
     <Content Include="Scripts\angular-touch.min.js.map" />
     <Content Include="Scripts\angular-sanitize.min.js.map" />

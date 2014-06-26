@@ -9,10 +9,8 @@ namespace dbexplorer.web
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/bundles/scripts").Include(
-                        "~/Scripts/jquery-{version}.js"
-                        ,"~/Scripts/angular.js"
-                        ,"~/Scripts/semantic.js"
-                        ,"~/Scripts/dbexplorer.js"
+                        "~/Scripts/angular.js"
+                        ,"~/Scripts/app/*.js"
                         ));
 
 

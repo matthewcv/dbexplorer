@@ -49,7 +49,7 @@ namespace dbexplorer.web.Controllers
 
         [Route("TableData/{server}/{database}/{table}")]
         [BindJson(typeof(TableQueryOptions),"options")]
-        public async Task<List<List<object>>> GetTableData(string server, string database, string table, TableQueryOptions options)
+        public async Task<TableData> GetTableData(string server, string database, string table, TableQueryOptions options)
         {
             return await _data.GetData(name(server), database, table, options);
         }

@@ -10,6 +10,6 @@ namespace dbexplorer.db
 {
     public interface IDataAccess
     {
-        Task<List<List<object>>> GetData(string server, string database, string table, TableQueryOptions options = null);
+        Task<TableData> GetData(string server, string database, string table, TableQueryOptions options = null);
     }
 }

@@ -31,7 +31,7 @@
                         <th ng-if="table.References">
                             &nbsp;
                         </th>
-                        <th class="{{t.IsPrimaryKey ? 'pk': ''}}" ng-repeat="t in table.Columns">{{t.Name}}</th>
+                        <th ng-class="{pk:t.IsPrimaryKey}" ng-repeat="t in table.Columns">{{t.Name}}</th>
                     </tr>
                     <tr>
                         <td ng-if="table.References">
@@ -42,7 +42,7 @@
                     
                 </thead>
                 <tbody>
-                    <tr ng-repeat="row in data">
+                    <tr ng-repeat="row in data.Rows">
                         <td ng-if="table.References">
                             <a href="" ng-click="referenceTo(row, r)" ng-repeat="r in table.References">{{r.PkTableName}} </a>
                         </td>
@@ -53,6 +53,9 @@
 
                 </tbody>
             </table>
+            <div mcv-pager="data">
+                
+            </div>
         </div>
 
     </div>

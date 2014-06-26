@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using dbexplorer.db.Model;
@@ -19,9 +20,9 @@ namespace dbexplorer.db.SqlServer
         /// <param name="query"></param>
         /// <param name="mapRow"></param>
         /// <returns></returns>
-        public static async Task ExecuteReader(string server, string database, string query, Action<SqlDataReader> mapRow)
+        public static async Task ExecuteReader(string server, string database, string query, Func<SqlDataReader, Task> mapRow)
         {
-            await ExecuteReader(server, database, c =>c.CommandText = query, mapRow);
+            await ExecuteReader(server, database, c =>c.CommandText = query,  mapRow);
         }
 
         /// <summary>
@@ -33,13 +34,13 @@ namespace dbexplorer.db.SqlServer
         /// <param name="prepareCommand"></param>
         /// <param name="mapRow"></param>
         /// <returns></returns>
-        public static async Task ExecuteReader(string server,string database, Action<SqlCommand> prepareCommand,  Action<SqlDataReader> mapRow)
+        public static async Task ExecuteReader(string server,string database, Action<SqlCommand> prepareCommand,  Func<SqlDataReader,Task> mapRow)
         {
             await ExecuteReaderAdvanced(server, database, prepareCommand, async r =>
             {
                 while (await r.ReadAsync())
                 {
-                    mapRow(r);
+                    await mapRow(r);
                 }
             });
         }
@@ -53,7 +54,7 @@ namespace dbexplorer.db.SqlServer
         /// <param name="query"></param>
         /// <param name="useReader"></param>
         /// <returns></returns>
-        public static async Task ExecuteReaderAdvanced(string server, string database, string query, Action<SqlDataReader> useReader)
+        public static async Task ExecuteReaderAdvanced(string server, string database, string query, Func<SqlDataReader, Task> useReader)
         {
             await ExecuteReaderAdvanced(server, database, c => c.CommandText = query, useReader);
         }
@@ -67,7 +68,7 @@ namespace dbexplorer.db.SqlServer
         /// <param name="prepareCommand"></param>
         /// <param name="useReader"></param>
         /// <returns></returns>
-        public static async Task ExecuteReaderAdvanced(string server, string database, Action<SqlCommand> prepareCommand, Action<SqlDataReader> useReader)
+        public static async Task ExecuteReaderAdvanced(string server, string database, Action<SqlCommand> prepareCommand, Func<SqlDataReader, Task> useReader)
         {
             SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder();
             csb.IntegratedSecurity = true;
@@ -82,14 +83,14 @@ namespace dbexplorer.db.SqlServer
                     prepareCommand(cmd);
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
-                         useReader(reader);
+                         await useReader(reader);
                     }
                 }
             }
             
         }
 
-        public async Task<List<List<object>>> GetData(string server, string database, string table, TableQueryOptions options = null)
+        public async Task<TableData> GetData(string server, string database, string table, TableQueryOptions options = null)
         {
             options = options ?? TableQueryOptions.Default;
 
@@ -99,21 +100,33 @@ namespace dbexplorer.db.SqlServer
 
             string sql = GetSelectSql(tab, options);
 
-            List<List<object>> data = new List<List<object>>();
+            TableData data = new TableData();
 
-            await ExecuteReader(server, database, sql, r =>
+            await ExecuteReader(server, database, GetCountSql(tab, options),  async r => data.Count = r.GetInt32(0));
+            
+            data.Rows = new List<List<object>>();
+
+            await ExecuteReader(server, database, sql, async r =>
             {
                 List<object> row = new List<object>();
                 for (int i = 0; i < tab.Columns.Count; i++)
                 {
                     row.Add(r[i]);
                 }
-                data.Add(row);
+                data.Rows.Add(row);
             });
 
             return data;
         }
 
+
+        private string GetCountSql(Table t, TableQueryOptions options)
+        {
+            StringBuilder sb = new StringBuilder("SELECT COUNT(*) FROM ");
+            sb.Append(t.Name);
+
+            return sb.ToString();
+        }
 
         private string GetSelectSql(Table t, TableQueryOptions options)
         {
