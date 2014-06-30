@@ -9,8 +9,9 @@ namespace dbexplorer.web
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/bundles/scripts").Include(
-                        "~/Scripts/angular.js"
-                        ,"~/Scripts/app/*.js"
+                        "~/Scripts/angular.js",
+                        "~/Scripts/angular-route.js", 
+                        "~/Scripts/app/*.js"
                         ));
 
 

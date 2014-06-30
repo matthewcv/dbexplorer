@@ -1,29 +1,40 @@
 ﻿<div ng-controller="ShellController">
-    <ul class="breadcrumbs">
-        @*<i ng-if="!$first" ng-repeat-start="b in breadcrumbs" class="right arrow icon divider"></i>*@
-        <li ng-repeat="b in breadcrumbs" ng-class="$last?'current':''">
-            <a href="" ng-if="!$last" ng-click="breadCrumbNav(b);">{{b.name}}</a>
-            <span ng-if="$last" >{{b.name}}</span>
-        </li>
-    </ul>
     
-    <div ng-switch="view">
-        
+    <div ng-view>
+    </div>
+    
 
-        <div ng-switch-when="dbDetails" ng-controller="DbDetailsController">
+        <script type="text/html" data-controller="DbDetailsController">
             <ul>
                 <li ng-repeat="table in databaseDetails.Tables"><a href="" ng-click="tableData(table)">{{table.Name}}</a> </li>
             </ul>
-        </div>
+        </script>
 
-        <div ng-switch-when="dbList" ng-controller="DbListController">
+    <script type="text/html" data-controller="DbListController">
+        <div class="row">
 
-            <ul>
-                <li ng-repeat="db in databases"><a ng-click="dbDetails(db);" href="">{{db.Name}}</a></li>
-            </ul>
+            <div class="large-8 columns">
+                <div class="row collapse">
+                    <div class="small-8 columns"><input type="text" ng-model="server" placeholder="type a database server" /></div>
+                    <div class="small-4 columns"><input type="button" class="button postfix" value="Use this server" ng-click="setServer()" /></div>
+                </div>
+                
+               
+            </div>
         </div>
+        <div class="row">
+            <div class="large-6 columns">
+
+                <ul ng-if="databases">
+                    <li ng-repeat="db in databases"><a ng-href="/{{safeServerName}}/{{db.Name}}">{{db.Name}}</a></li>
+                </ul>
+            </div>
+        </div>
+    </script>
+
+
         
-        <div ng-switch-when="tableData" ng-controller="TableDataController">
+        <script type="text/html" data-controller="TableDataController">
             <div id="pager"><a href="" ng-click="pageLeft()"><i class="left arrow icon"></i></a> <a href="" ng-click="pageRight()"><i class="right arrow icon"></i></a></div>
             <table id="table-data" class="">
                 <thead>
@@ -39,24 +50,26 @@
                         </td>
                         <td ng-repeat="t in table.Columns">{{t.DataType}}</td>
                     </tr>
-                    
+
                 </thead>
                 <tbody>
                     <tr ng-repeat="row in data.Rows">
                         <td ng-if="table.References">
                             <a href="" ng-click="referenceTo(row, r)" ng-repeat="r in table.References">{{r.PkTableName}} </a>
                         </td>
-                        <td ng-repeat="c in row track by $index">{{c}}
-                            
+                        <td ng-repeat="c in row track by $index">
+                            {{c}}
+
                         </td>
                     </tr>
 
                 </tbody>
             </table>
             <div mcv-pager="data">
-                
-            </div>
-        </div>
 
-    </div>
+            </div>
+        </script>
+
+
+
 </div>

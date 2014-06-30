@@ -1,34 +1,74 @@
 ﻿(function() {
     "use strict";
 
-    var shellService = angular.module('shell', []);
-    shellService.factory('shell', function () {
+    var shellService = angular.module('shell', ['api', 'util' ]);
+    shellService.factory('shell', ['api', 'util', function (api, util) {
         var shell = {
-            server: 'SRV_DEV_TRANS\\SMGTRANS',
+            server: null,
+            databases:null,
             database: null,
             table: null,
-            breadcrumbs: [],
             shellScope: null,
-            
-            popBreadcrumbs: function (b) {
-                var i = this.breadcrumbs.indexOf(b);
-                this.breadcrumbs.splice(i + 1, this.breadcrumbs.length);
+
+            setServer: function (server, next) {
+                if (server == this.server) {
+                    next();
+                } else {
+                    this.server = server;
+                    this.shellScope.safeServerName = util.sanitizeServerName(server);
+                    api.getDatabases(this, function(databases) {
+                        this.databases = databases;
+                        next();
+                    }.bind(this));
+                }
             },
-            pushBreadcrumb: function (currentState, nextState) {
-                var current = this.breadcrumbs[this.breadcrumbs.length - 1];
-                angular.extend(current, currentState);
-                this.breadcrumbs.push(nextState);
-                this.shellScope.view = nextState.view;
+
+            setDatabase:function(databaseName, next) {
+                if (this.database &&  databaseName == this.database.Name) {
+                  next();
+              } else {
+                    api.getDatabaseDetails(this, function(database) {
+                        this.database = database;
+                        next();
+                    }.bind(this));
+                }
             },
-            currentBreadcrumb: function () {
-                return this.breadcrumbs[this.breadcrumbs.length - 1];
+
+
+            initializeFromRoute: function($routeParams, next) {
+                if ($routeParams.server) {
+                    this.setServer(util.unSanitizeServerName($routeParams.server), function() {
+                        if ($routeParams.database) {
+
+                        } else {
+                            next();
+                        }
+                    }.bind(this));
+                } else {
+                    next();
+                }
             }
+
+
+            
         }
-        shell.breadcrumbs.push({ name: shell.server, view: "dbList" });
 
 
         return shell;
 
-    });
+    }]);
+
+
+    angular.module('util', []).factory('util', [function() {
+        return {
+            sanitizeServerName:function(name) {
+                return name.replace("\\", "-");
+            },
+            unSanitizeServerName:function(name) {
+                return name.replace("-", "\\");
+            }
+
+        }
+    }]);
 
 })();

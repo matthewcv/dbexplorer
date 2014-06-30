@@ -2,46 +2,66 @@
     "use strict";
 
 
-    var app = angular.module('dbexplorer', ['shell', 'api', 'pagerDirective']);
+    var app = angular.module('dbexplorer', ['shell', 'api', 'util', 'pagerDirective', 'ngRoute']);
+
+    app.config(['$routeProvider', '$locationProvider', 
+        function ($routeProvider, $locationProvider) {
+            $locationProvider.html5Mode(true);
+
+            function getroute(controller) {
+                return {
+                    controller: controller,
+                    template: function (parms) {
+
+                        return document.querySelector("script[data-controller=" + controller + "]").innerHTML;
+                    }
+                }
+            }
+
+
+            $routeProvider.when("/", getroute('DbListController'));
+            $routeProvider.when("/:server", getroute('DbListController'));
+
+            $routeProvider.when("/:server/:database", getroute('DbDetailsController'));
+        }
+    ]);
 
 
 
-
-    app.controller('DbListController', ['$scope', 'api', 'shell',
-        function ($scope, api, shell) {
+    app.controller('DbListController', ['$scope', 'api', 'shell', 'util','$routeParams','$location',
+        function ($scope, api, shell,util, $routeParams, $location) {
             console.log('DbListController');
+            console.dir($routeParams);
 
-            api.getDatabases(function(databases) {
 
-                $scope.databases = databases;
-
+            shell.initializeFromRoute($routeParams, function() {
+                $scope.databases = shell.databases;
             });
+            
 
-            $scope.dbDetails = function (db) {
-
-                
-                shell.database = db;
-                shell.pushBreadcrumb({},{ name: db.Name, db: db, view: 'dbDetails' });
-                
-            };
+            $scope.setServer = function () {
+                $location.url(util.sanitizeServerName($scope.server));
+            }
 
             
         }
     ]);
 
-    app.controller('DbDetailsController', ['$scope', 'api', 'shell',
-        function($scope, api, shell) {
+    app.controller('DbDetailsController', ['$scope', 'api', 'shell','$routeParams','$location',
+        function($scope, api, shell, $routeParams, $location) {
             console.log('DbDetailsController');
-            api.getDatabaseDetails(function(dbdetails) {
-                $scope.databaseDetails = dbdetails;
-            });
+            console.dir($routeParams);
 
 
+            //api.getDatabaseDetails(function(dbdetails) {
+            //    $scope.databaseDetails = dbdetails;
+            //});
 
-            $scope.tableData = function (table) {
-                shell.table = table;
-                shell.pushBreadcrumb({}, { name: table.Name, table: table, view: 'tableData' });
-            }
+
+//$scope.tableData = function (table) {
+            //    shell.table = table;
+            //    shell.pushBreadcrumb({}, { name: table.Name, table: table, view: 'tableData' });
+            //}
         }
     ]);
 
@@ -75,22 +95,15 @@
     ]);
 
 
-    app.controller('ShellController', ['$scope', 'shell',
-        function ($scope, shell) {
+    app.controller('ShellController', ['$scope', 'shell','$routeParams',
+        function ($scope, shell, $routeParams) {
             console.log('ShellController');
             $scope.server =shell.server ;
-            $scope.view = shell.breadcrumbs[0].view;
-            $scope.breadcrumbs = shell.breadcrumbs;
+            $scope.safeServerName = null;
 
             shell.shellScope = $scope;
 
-            $scope.breadCrumbNav = function(b) {
-                
-                $scope.view = b.view;
-                shell.popBreadcrumbs(b);
-
-            }
-
+            console.dir($routeParams);//none here.  Probably because the route didn't invoke this controller.
 
         }
     ]);

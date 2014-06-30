@@ -8,6 +8,7 @@ namespace dbexplorer.web.Controllers
 {
     public class HomeController : Controller
     {
+        [Route("{*any}")]
         public ActionResult Index()
         {
             ViewBag.Title = "Home Page";

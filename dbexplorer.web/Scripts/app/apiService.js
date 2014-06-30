@@ -1,14 +1,11 @@
 ﻿(function () {
     "use strict";
 
-    var apiService = angular.module('api', []);
+    var apiService = angular.module('api', ['util']);
 
-    apiService.factory('api', ['shell', '$http',
-        function (shell, $http) {
+    apiService.factory('api', ['$http','util',
+        function ($http, util) {
 
-            function clean(part) {
-                return part.replace("\\", "-");
-            }
 
             function ApiService() {
 
@@ -16,21 +13,21 @@
             ApiService.prototype = {
                 cache: {},
 
-                getDatabases: function (haveDatabases) {
-                    this.apiGet("/Db/Databases/" + clean(shell.server), haveDatabases);
+                getDatabases: function (shell,haveDatabases) {
+                    this.apiGet("/Db/Databases/" + shell.shellScope.safeServerName, haveDatabases);
                 },
 
-                getDatabaseDetails: function (haveData) {
-                    this.apiGet("/Db/DatabaseDetails/" + clean(shell.server) + "/" + shell.database.Name, haveData);
+                getDatabaseDetails: function (shell,haveData) {
+                    this.apiGet("/Db/DatabaseDetails/" + shell.shellScope.safeServerName + "/" + shell.database.Name, haveData);
                 },
 
-                getTableData: function (scope) {
+                getTableData: function (shell, haveData) {
                     var options = encodeURIComponent(angular.toJson(scope.tableDataOptions));
                     console.log(options);
-                    $http.get("/Db/TableData/" + clean(shell.server) + "/" + shell.database.Name + "/" + shell.table.Name + "?options=" + options)
+                    $http.get("/Db/TableData/" + shell.shellScope.safeServerName + "/" + shell.database.Name + "/" + shell.table.Name + "?options=" + options)
                         .then(function (response) {
 
-                            scope.data = response.data;
+                            haveData( response.data);
                         },
                         this.apiError.bind(this));
                 },
