@@ -1,6 +1,6 @@
 ﻿(function () {
     "use strict";
-    angular.module('pagerDirective', [])
+    angular.module('mcvDirectives', [])
         .directive('mcvPager', function () {
             /*Pager directive.  generates the pager ui and invokes methods on the scope to change the page.
             Expects the scope to implement this interface:
@@ -39,7 +39,31 @@
                     });
                 }
             }
-        });
+        })
+    .directive('mcvMruList', function () {
+        function showMruList(el) {
+
+            $('<div />').addClass('panel').css({ height: '50px', width: el.outerWidth() +'px', position: 'absolute', top: el.outerHeight() +'px', left: '0', zIndex:100 }).appendTo(el.parent());
+        }
+
+            return {
+                link:function(scope, el, attr) {
+                    console.dir(['mcvMruList', scope, el, attr]);
+
+                    el.on('$destroy', function () {
+                        console.dir('destrouy');
+                        el.off();
+                    });
+
+                    el.on('keyup', function(ev) {
+                        if (ev.keyCode == 13) {
+                            showMruList(el);
+                        }
+                    });
+                }
+            }
+        })
+    ;
 
 
     function getUi(totalPages, currentPage) {

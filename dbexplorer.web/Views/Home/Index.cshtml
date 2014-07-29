@@ -15,8 +15,8 @@
 
             <div class="large-8 columns">
                 <div class="row collapse">
-                    <div class="small-8 columns"><input type="text" ng-model="server" placeholder="type a database server" /></div>
-                    <div class="small-4 columns"><input type="button" class="button postfix" value="Use this server" ng-click="setServer()" /></div>
+                    <div class="small-8 columns"><input mcv-mru-list="set-server-button" type="text" ng-model="server" placeholder="type a database server" /></div>
+                    <div class="small-4 columns"><input id="set-server-button" type="button" class="button postfix" value="Use this server" ng-click="setServer()" /></div>
                 </div>
                 
                

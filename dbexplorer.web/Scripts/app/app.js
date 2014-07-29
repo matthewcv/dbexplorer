@@ -2,7 +2,7 @@
     "use strict";
 
 
-    var app = angular.module('dbexplorer', ['shell', 'api', 'util', 'pagerDirective', 'ngRoute']);
+    var app = angular.module('dbexplorer', ['shell', 'api', 'util', 'mcvDirectives', 'ngRoute']);
 
     app.config(['$routeProvider', '$locationProvider', 
         function ($routeProvider, $locationProvider) {
@@ -36,6 +36,7 @@
 
             shell.initializeFromRoute($routeParams, function() {
                 $scope.databases = shell.databases;
+                $scope.server = shell.server;
             });
             
 
