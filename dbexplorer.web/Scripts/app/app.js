@@ -30,8 +30,8 @@
 
     app.controller('DbListController', ['$scope', 'api', 'shell', 'util','$routeParams','$location',
         function ($scope, api, shell,util, $routeParams, $location) {
-            console.log('DbListController');
-            console.dir($routeParams);
+           // console.log('DbListController');
+           // console.dir($routeParams);
 
 
             shell.initializeFromRoute($routeParams, function() {
@@ -50,8 +50,8 @@
 
     app.controller('DbDetailsController', ['$scope', 'api', 'shell','$routeParams','$location',
         function($scope, api, shell, $routeParams, $location) {
-            console.log('DbDetailsController');
-            console.dir($routeParams);
+      //      console.log('DbDetailsController');
+      //      console.dir($routeParams);
 
 
             //api.getDatabaseDetails(function(dbdetails) {
@@ -68,10 +68,10 @@
 
     app.controller('TableDataController', ['$scope', 'api', 'shell',
         function ($scope, api, shell) {
-            console.log('TableDataController');
+          //  console.log('TableDataController');
 
             var b = shell.currentBreadcrumb();
-            console.dir(b.table);
+          //  console.dir(b.table);
             $scope.table = b.table;
 
             $scope.tableDataOptions = { Page: 1, PageSize: 10 };
@@ -98,13 +98,13 @@
 
     app.controller('ShellController', ['$scope', 'shell','$routeParams',
         function ($scope, shell, $routeParams) {
-            console.log('ShellController');
+        //    console.log('ShellController');
             $scope.server =shell.server ;
             $scope.safeServerName = null;
 
             shell.shellScope = $scope;
 
-            console.dir($routeParams);//none here.  Probably because the route didn't invoke this controller.
+        //    console.dir($routeParams);//none here.  Probably because the route didn't invoke this controller.
 
         }
     ]);

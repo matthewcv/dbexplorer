@@ -6,16 +6,28 @@
             var storage = window.localStorage;
             var storageName;
             var storageItem;
-
+            
            
             
             $scope.items = [];
+            $scope.item = "";
+            $scope.showList = false;
+            $scope.selectedIndex = -1;
+            $scope.displayedItems = [];
 
 
-            this.addItem = function(item) {
-                if (storageItem.indexOf(item) < 0) {
-                    storageItem.splice(0, 0, item);
-                    storage.setItem(storageName, JSON.stringify(storageItem));
+            this.addOrSelectItem = function () {
+                console.log("addOrSelectItem -" + $scope.selectedIndex);
+                if ($scope.selectedIndex > -1) {
+                    $scope.item = $scope.items[$scope.selectedIndex];
+                    $scope.showList = false;
+                    $scope.$apply();
+                } else {
+                    var item = $scope.item.trim();
+                    if (storageItem.indexOf(item) < 0 && item.length) {
+                        storageItem.splice(0, 0, item);
+                        storage.setItem(storageName, JSON.stringify(storageItem));
+                    }
                 }
             }
 
@@ -28,52 +40,88 @@
                     storage.setItem(storageName, JSON.stringify( storageItem));
                 }
 
+                $scope.items = storageItem;
             }
 
-            this.filterList = function(val)
-            {
-                if (val) {
-                    $scope.items = storageItem.filter(function(i) { return i.toUpperCase().indexOf(val.toUpperCase()) >=  0; });
+            this.moveSelection = function(up) {
+                console.log("moveSelection -" + $scope.selectedIndex);
+                var lastIdx = $scope.displayedItems.length - 1;
+
+                if (up) {
+                    if ($scope.selectedIndex <= 0) {
+                        $scope.selectedIndex = lastIdx;
+                    }
+                    else { $scope.selectedIndex--; }
+
                 } else {
-                    $scope.items = storageItem;
+                    if ($scope.selectedIndex == lastIdx) {
+                        $scope.selectedIndex = 0;
+                    } else {
+                        $scope.selectedIndex++;
+                    }
+
                 }
+
                 $scope.$apply();
             }
 
+            //this.filterList = function(val) {
+            //    console.log('filter list');
+            //    console.dir($scope);
+            //    if (val) {
+            //        $scope.items = storageItem.filter(function(i) { return i.toUpperCase().indexOf(val.toUpperCase()) >=  0; });
+            //    } else {
+            //        $scope.items = storageItem;
+            //    }
+            //    $scope.$apply();
+            //}
+
         }])
 
-        .directive('mcvMruList', ['$compile', function ($compile) {
+        .directive('mcvMruList', [ function () {
             //65-90, 48-57,40
 
             var mruEl = null;
 
-            function makeMruEl(el, ctrl, $scope) {
-                mruEl = angular.element("<div ng-hide='items.length == 0'><ul><li ng-repeat='item in items'>{{item}}</li></ul></div>").css({  width: el[0].offsetWidth + 'px', position: 'absolute', top: el[0].offsetHeight + 'px', left: '0', zIndex: 100 });
-
-
-                el.parent().append(mruEl);
-                $compile(mruEl)($scope);
-
-            }
 
             return {
                 controller: 'MruListController',
+                templateUrl: '/Content/Templates/mru-template.html',
+                scope: {},
                 link: function (scope, el, attr, ctrl) {
                     ctrl.init(attr);
-                    console.dir(['mcvMruList', arguments]);
-                    makeMruEl(el, ctrl, scope);
+                    //console.dir([this, arguments]);
+                    var input = angular.element( el[0].querySelector("input[type='text']"));
+                    var button =  angular.element(el[0].querySelector("input[type='button']"));
+                    var list = angular.element(el[0].querySelector(".mru-list"));
+                    list.css({ top: input[0].offsetHeight + "px", width: input[0].offsetWidth + "px" });
+
                     el.on('$destroy', function () {
-                        console.dir('destroy');
                         el.off();
+                        input.off();
+                        button.off();
                     });
 
-                    el.on('keyup', function (ev) {
-                        
-                        console.log(ev.keyCode + ": " + el.val());
+                    input.on('keydown', function (ev) {
+                        console.log("keydown -" + scope.selectedIndex + ", " + ev.keyCode);
                         if (ev.keyCode == 13) {
-                            ctrl.addItem(el.val());
+                            ctrl.addOrSelectItem();
                         }
-                        ctrl.filterList(el.val());
+                        if (ev.keyCode == 40 || ev.keyCode == 38) {
+                            if (!scope.showList) {
+                                scope.showList = true;
+                                scope.$apply();
+                            } else {
+                                ctrl.moveSelection(ev.keyCode == 38);
+                            }
+                        } else {
+                            scope.selectedIndex = -1;
+                        }
+
+
+                        scope.showList = true;
+                        //console.log(ev.keyCode + ": " + input.val());
+                        
                     });
                 }
             }

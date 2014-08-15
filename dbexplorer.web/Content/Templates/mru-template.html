@@ -1,0 +1,5 @@
+﻿
+<div class="small-8 columns"><input type="text" ng-model="item" placeholder="type a database server" /></div>
+<div class="small-4 columns"><input type="button" class="button postfix" value="Use this server"  /></div>
+
+<div class='mru-list' ng-show="showList"><ul><li ng-class="{selected:$index==selectedIndex}"  ng-repeat='item in items | filter:item as displayedItems'>{{item}}</li></ul></div>

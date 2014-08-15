@@ -1,1 +1,28 @@
-﻿
+﻿.mru-list {
+    border: solid 1px black;
+    padding: 5px;
+    background-color: rgb(255, 246, 236);
+    position: absolute;
+    z-index: 100;
+}
+
+.mru-list li {
+    padding: 1px;
+}
+
+.mru-list li.selected {
+    background-color: bisque;
+        border: solid 1px black;
+    padding: 0;
+}
+
+
+
+.mru-list li:hover {
+    background-color: bisque;
+
+}
+
+[mcv-mru-list] {
+    position: relative;
+}
