@@ -1,11 +1,16 @@
 ﻿(function () {
     "use strict";
+
+    angular.element.prototype.is = function(selector) {
+        var el = this[0];
+        return (el.matches || el.matchesSelector || el.msMatchesSelector || el.mozMatchesSelector || el.webkitMatchesSelector || el.oMatchesSelector).call(el, selector);
+    }
+
+
     angular.module('mcvDirectives', [])
         .controller('MruListController', ['$scope', function ($scope) {
 
             var storage = window.localStorage;
-            var storageName;
-            var storageItem;
             
            
             
@@ -16,25 +21,34 @@
             $scope.displayedItems = [];
 
 
-            this.addOrSelectItem = function () {
+            this.addOrSelectItem = function (item) {
                 console.log("addOrSelectItem -" + $scope.selectedIndex);
-                if ($scope.selectedIndex > -1) {
-                    $scope.item = $scope.items[$scope.selectedIndex];
+
+                if (item && $scope.displayedItems.indexOf(item) >= 0) {
+                    $scope.selectedIndex = $scope.displayedItems.indexOf(item);
+                    return this.addOrSelectItem();
+                }
+                else if ($scope.selectedIndex > -1) {
+                    $scope.item = $scope.displayedItems[$scope.selectedIndex];
                     $scope.showList = false;
+                    $scope.selectedIndex = -1;
                     $scope.$apply();
                 } else {
-                    var item = $scope.item.trim();
-                    if (storageItem.indexOf(item) < 0 && item.length) {
-                        storageItem.splice(0, 0, item);
-                        storage.setItem(storageName, JSON.stringify(storageItem));
+                    item = $scope.item.trim();
+                    if ($scope.items.indexOf(item) < 0 && item.length) {
+                        $scope.items.splice(0, 0, item);
+                        storage.setItem($scope.items, JSON.stringify($scope.items));
+                        $scope.showList = false;
+                        $scope.selectedIndex = -1;
+                        $scope.$apply();
                     }
                 }
             }
 
             this.init = function(attr) {
-                storageName = "MruList-" + attr.mcvMruList;
+                var storageName = "MruList-" + attr.mcvMruList;
                 
-                storageItem = JSON.parse( storage.getItem(storageName));
+                var storageItem = JSON.parse( storage.getItem(storageName));
                 if (!storageItem || !angular.isArray(storageItem)) {
                     storageItem = [];
                     storage.setItem(storageName, JSON.stringify( storageItem));
@@ -44,7 +58,6 @@
             }
 
             this.moveSelection = function(up) {
-                console.log("moveSelection -" + $scope.selectedIndex);
                 var lastIdx = $scope.displayedItems.length - 1;
 
                 if (up) {
@@ -61,6 +74,7 @@
                     }
 
                 }
+                console.log("moveSelection -" + $scope.selectedIndex);
 
                 $scope.$apply();
             }
@@ -100,6 +114,14 @@
                         el.off();
                         input.off();
                         button.off();
+                    });
+
+                    list.on('click', function (ev) {
+                        var target = angular.element(ev.target);
+                        if (target.is(".mru-item")) {
+                            
+                            ctrl.addOrSelectItem(target.scope().item);
+                        }
                     });
 
                     input.on('keydown', function (ev) {
