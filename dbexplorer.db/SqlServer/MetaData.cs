@@ -12,8 +12,8 @@ namespace dbexplorer.db.SqlServer
 {
     public class MetaData:IMetaData
     {
-        private static List<Database> _databases = null;
-        private static List<Database> _databaseDetails = new List<Database>();
+        //private static List<Database> _databases = null;
+        //private static List<Database> _databaseDetails = new List<Database>();
 
         private static string databaseDetailsSql = @"
 --tables and columns
@@ -46,47 +46,41 @@ ORDER BY FK_TABLE_SCHEMA, FK_TABLE_NAME, FK_COLUMN_NAME, FK_ORDINAL_POSITION
         /// <returns></returns>
         public async Task<List<Database>> GetDatabases(string server)
         {
-            if (_databases == null)
-            {
-                _databases = new List<Database>();
+            var    databases = new List<Database>();
                 await DataAccess.ExecuteReader(server, "master", "select name from sys.databases WHERE name NOT IN ('master','tempdb','model','msdb')",
-                    async r => _databases.Add(new Database() { Name = r.GetString(0) }));
-            }
-            return _databases;
+                    async r => databases.Add(new Database() { Name = r.GetString(0) }));
+
+            return databases;
 
         }
 
         public async Task<Database> GetDatabaseDetails(string server, string database)
         {
-            Database db = _databaseDetails.FirstOrDefault(d => d.Name == database);
-            if (db == null)
-            {
-                db = new Database() {Name = database};
-                _databaseDetails.Add(db);
-                List<Table> tables = new List<Table>();
-                await DataAccess.ExecuteReaderAdvanced(server, database, databaseDetailsSql,
-                    async r =>
+            Database db = null;
+
+            List<Table> tables = new List<Table>();
+            await DataAccess.ExecuteReaderAdvanced(server, database, databaseDetailsSql,
+                async r =>
+                {
+                    while ( await r.ReadAsync())
                     {
-                        while ( await r.ReadAsync())
-                        {
-                            MapTablesAndColumns(tables,r);
-                        }
+                        MapTablesAndColumns(tables,r);
+                    }
 
-                         await r.NextResultAsync();
-                         while (await r.ReadAsync())
-                        {
-                            MapPrimaryKeys(tables, r);
-                        }
+                        await r.NextResultAsync();
+                        while (await r.ReadAsync())
+                    {
+                        MapPrimaryKeys(tables, r);
+                    }
 
-                         await r.NextResultAsync();
-                         while (await r.ReadAsync())
-                        {
-                            MapReferences(tables, r);
-                        }
-                    });
+                        await r.NextResultAsync();
+                        while (await r.ReadAsync())
+                    {
+                        MapReferences(tables, r);
+                    }
+                });
 
-                db.Tables = tables;
-            }
+            db.Tables = tables;
 
             
             return db;

@@ -16,7 +16,8 @@
                 } else {
                     this.server = server;
                     this.shellScope.safeServerName = util.sanitizeServerName(server);
-                    api.getDatabases(this, function(databases) {
+                    api.getDatabases(this, function (databases) {
+                        console.dir(databases);
                         this.databases = databases;
                         next();
                     }.bind(this));

@@ -8,12 +8,16 @@
 
 
     angular.module('mcvDirectives', [])
-        .controller('MruListController', ['$scope', function ($scope) {
+        .controller('MruListController', ['$scope', 'localStorage', '$element', function ($scope, storage, $element) {
 
-            var storage = window.localStorage;
-            
-           
-            
+            var storageName ;
+
+                $scope.$watch('item', function() {
+                    var ngModel = $element.data('$ngModelController');
+                    ngModel.$setViewValue($scope.item);
+                    
+                });
+
             $scope.items = [];
             $scope.item = "";
             $scope.showList = false;
@@ -37,7 +41,7 @@
                     item = $scope.item.trim();
                     if ($scope.items.indexOf(item) < 0 && item.length) {
                         $scope.items.splice(0, 0, item);
-                        storage.setItem($scope.items, JSON.stringify($scope.items));
+                        storage.setItem(storageName, JSON.stringify($scope.items));
                         $scope.showList = false;
                         $scope.selectedIndex = -1;
                         $scope.$apply();
@@ -46,8 +50,7 @@
             }
 
             this.init = function(attr) {
-                var storageName = "MruList-" + attr.mcvMruList;
-                
+                storageName = "MruList-" + attr.mcvMruList;
                 var storageItem = JSON.parse( storage.getItem(storageName));
                 if (!storageItem || !angular.isArray(storageItem)) {
                     storageItem = [];
@@ -79,6 +82,18 @@
                 $scope.$apply();
             }
 
+            this.deleteItem = function() {
+                if ($scope.selectedIndex >= 0 && !$scope.item) {
+                    console.log('deleting item');
+                    $scope.items.splice($scope.selectedIndex, 1);
+                    storage.setItem(storageName, JSON.stringify($scope.items));
+                    if ($scope.selectedIndex == $scope.items.length) {
+                        $scope.selectedIndex--;
+                    }
+                    $scope.$apply();
+                }
+            }
+
             //this.filterList = function(val) {
             //    console.log('filter list');
             //    console.dir($scope);
@@ -101,10 +116,16 @@
             return {
                 controller: 'MruListController',
                 templateUrl: '/Content/Templates/mru-template.html',
-                scope: {},
-                link: function (scope, el, attr, ctrl) {
+                scope: {
+                    select: '&onSelect',
+                    placeholder: '@',
+                    buttonText:'@'
+                },
+                require:['mcvMruList','ngModel'],
+                link: function (scope, el, attr, ctrls) {
+                    var ctrl = ctrls[0];
+                    var ngModel = ctrls[1];
                     ctrl.init(attr);
-                    //console.dir([this, arguments]);
                     var input = angular.element( el[0].querySelector("input[type='text']"));
                     var button =  angular.element(el[0].querySelector("input[type='button']"));
                     var list = angular.element(el[0].querySelector(".mru-list"));
@@ -123,21 +144,30 @@
                             ctrl.addOrSelectItem(target.scope().item);
                         }
                     });
-
-                    input.on('keydown', function (ev) {
+                    input.on('dblclick', function(ev) {
+                        if (!scope.showList) {
+                            scope.showList = true;
+                            scope.$apply();
+                        }
+                    }).on('blur', function() {
+                        setTimeout(function() {
+                            scope.showList = false;
+                            scope.$apply();
+                        }, 200);
+                    }).on('keydown', function (ev) {
                         console.log("keydown -" + scope.selectedIndex + ", " + ev.keyCode);
                         if (ev.keyCode == 13) {
                             ctrl.addOrSelectItem();
-                        }
-                        if (ev.keyCode == 40 || ev.keyCode == 38) {
+                        } else if (ev.keyCode == 40 || ev.keyCode == 38) {
                             if (!scope.showList) {
                                 scope.showList = true;
                                 scope.$apply();
                             } else {
                                 ctrl.moveSelection(ev.keyCode == 38);
                             }
-                        } else {
-                            scope.selectedIndex = -1;
+                            ev.preventDefault();
+                        } else if(ev.keyCode == 46) {
+                            ctrl.deleteItem();
                         }
 
 
@@ -186,7 +216,11 @@
                         });
                     }
                 }
-            });
+            })
+.factory('localStorage',function() {
+            return window.localStorage;
+        })
+    ;
 
 
     function getUi(totalPages, currentPage) {

@@ -30,8 +30,8 @@
 
     app.controller('DbListController', ['$scope', 'api', 'shell', 'util','$routeParams','$location',
         function ($scope, api, shell,util, $routeParams, $location) {
-           // console.log('DbListController');
-           // console.dir($routeParams);
+            console.log('DbListController');
+            console.dir($routeParams);
 
 
             shell.initializeFromRoute($routeParams, function() {
@@ -41,6 +41,7 @@
             
 
             $scope.setServer = function () {
+                console.dir('server: ' + $scope.server);
                 $location.url(util.sanitizeServerName($scope.server));
             }
 
@@ -50,19 +51,19 @@
 
     app.controller('DbDetailsController', ['$scope', 'api', 'shell','$routeParams','$location',
         function($scope, api, shell, $routeParams, $location) {
-      //      console.log('DbDetailsController');
-      //      console.dir($routeParams);
+            console.log('DbDetailsController');
+           console.dir($routeParams);
 
 
-            //api.getDatabaseDetails(function(dbdetails) {
-            //    $scope.databaseDetails = dbdetails;
-            //});
+            api.getDatabaseDetails(function(dbdetails) {
+                $scope.databaseDetails = dbdetails;
+            });
 
 
-//$scope.tableData = function (table) {
-            //    shell.table = table;
-            //    shell.pushBreadcrumb({}, { name: table.Name, table: table, view: 'tableData' });
-            //}
+            $scope.tableData = function (table) {
+                shell.table = table;
+                shell.pushBreadcrumb({}, { name: table.Name, table: table, view: 'tableData' });
+            }
         }
     ]);
 
