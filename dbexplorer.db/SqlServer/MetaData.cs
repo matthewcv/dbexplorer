@@ -56,7 +56,7 @@ ORDER BY FK_TABLE_SCHEMA, FK_TABLE_NAME, FK_COLUMN_NAME, FK_ORDINAL_POSITION
 
         public async Task<Database> GetDatabaseDetails(string server, string database)
         {
-            Database db = null;
+            Database db = new Database(){Name = database};
 
             List<Table> tables = new List<Table>();
             await DataAccess.ExecuteReaderAdvanced(server, database, databaseDetailsSql,

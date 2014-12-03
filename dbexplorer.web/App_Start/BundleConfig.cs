@@ -10,13 +10,13 @@ namespace dbexplorer.web
         {
             bundles.Add(new ScriptBundle("~/bundles/scripts").Include(
                         "~/bower_components/angular/angular.js",
-                        "~/bower_components/angular-route/angular-route.js", 
-                        "~/Scripts/app/*.js"
-                        ));
+                        "~/bower_components/angular-ui-router/release/angular-ui-router.js"
+                        
+                        ).IncludeDirectory("~/client","*.js",true));
 
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                    "~/Content/foundation.css",
+                    //"~/Content/foundation.css",
                       "~/Content/site.css"));
         }
     }
