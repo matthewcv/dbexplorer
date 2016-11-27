@@ -1,7 +1,0 @@
-﻿<div ng-controller="SelectDatabaseController">
-    <input type="text" placeholder="What Server?" ng-model="dbInfo.server" /><a title="recent" href=""><span class="arrow-down"></span></a><input type="button" value="This one." ng-click="selectServer()" />
-    
-    <ul ng-if="dbInfo.dbList" class="dbList">
-        <li ng-repeat="db in dbInfo.dbList"><a href="" ng-click="selectDatabase(db)">{{db}}</a></li>
-    </ul>
-</div>
