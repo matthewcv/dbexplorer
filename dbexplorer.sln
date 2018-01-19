@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dbexplorer-web", "dbexplorer-web\dbexplorer-web.csproj", "{D527A38F-0240-414E-84B6-6AC82BC44912}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dbexplorer.web", "dbexplorer.web\dbexplorer.web.csproj", "{D527A38F-0240-414E-84B6-6AC82BC44912}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dbexplorer.lib", "dbexplorer.lib\dbexplorer.lib.csproj", "{A099114F-8A65-4F5C-90BD-458D5C0C8878}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dbexplorer.lib.test", "dbexplorer.lib.test\dbexplorer.lib.test.csproj", "{9011E0D9-C6B7-43D9-A71C-427BA4641E28}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{D527A38F-0240-414E-84B6-6AC82BC44912}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D527A38F-0240-414E-84B6-6AC82BC44912}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D527A38F-0240-414E-84B6-6AC82BC44912}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A099114F-8A65-4F5C-90BD-458D5C0C8878}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A099114F-8A65-4F5C-90BD-458D5C0C8878}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A099114F-8A65-4F5C-90BD-458D5C0C8878}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A099114F-8A65-4F5C-90BD-458D5C0C8878}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9011E0D9-C6B7-43D9-A71C-427BA4641E28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9011E0D9-C6B7-43D9-A71C-427BA4641E28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9011E0D9-C6B7-43D9-A71C-427BA4641E28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9011E0D9-C6B7-43D9-A71C-427BA4641E28}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
