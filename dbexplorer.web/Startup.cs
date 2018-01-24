@@ -1,3 +1,4 @@
+using dbexplorer.lib;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -25,6 +26,8 @@ namespace dbexplorer_web
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            services.AddSingleton<IDatabaseInfo>(provider => new SqlServerDatabaseInfo());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

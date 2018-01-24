@@ -18,7 +18,9 @@ order by t.TABLE_SCHEMA, t.TABLE_NAME
             var db = new Database();
             using (SqlConnection con = new SqlConnection(connection))
             {
+                
                 await con.OpenAsync();
+                db.Name = con.Database;
                 using (SqlCommand cmd = new SqlCommand(sql, con))
                 {
                     var reader = await cmd.ExecuteReaderAsync();
