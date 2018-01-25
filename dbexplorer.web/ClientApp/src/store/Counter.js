@@ -3,7 +3,12 @@ const decrementCountType = 'DECREMENT_COUNT';
 const initialState = { count: 0 };
 
 export const actionCreators = {
-  increment: () => ({ type: incrementCountType }),
+    increment: (...args) => {
+        console.dir(args);
+        return {
+            type: incrementCountType
+        }
+    },
   decrement: () => ({ type: decrementCountType })
 };
 
