@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using dbexplorer.lib;
 using dbexplorer.lib.Model;
 using Microsoft.AspNetCore.Mvc;
 
-namespace dbexplorer_web.Controllers
+namespace dbexplorer.web.Controllers
 {
     [Route("api/[controller]")]
     public class DatabaseController : Controller
